@@ -1,27 +1,57 @@
 const express = require('express');
 // const { ArduinoData } = require('./serial')
 const router = express.Router();
-const arduinoId = [1,2,3,4,5];
+const arduinoId = [1, 2, 3, 4, 5];
 const db = require('./db').Arduino;
 
+let month = {
+    "" : 1,
+    "" : 2,
+    "" : 3,
+    "" : 4,
+    "" : 5,
+    "" : 6,
+    "" : 7,
+    "" : 8,
+    "" : 9,
+    "Oct" : 10,
+    "" : 11,
+    "" : 12
+}
 
 setInterval(() => {
 
     let date = new Date();
+    let da = date.toString().split(' ');
+    da = `${da[3]}/${month[da[1]]}/${da[2]} ${da[4]}`;
 
-    let da = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDay() + " " + date.getHours() + 
-            ":" + date.getMinutes() + ":" + date.getSeconds() + ":" + date.getMilliseconds();
+    // let da = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDay() + " " + date.getHours() +
+    //     ":" + date.getMinutes() + ":" + date.getSeconds() + ":" + date.getMilliseconds();
 
     // let da = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + " " + date.getDay() +
     //             "/" + date.getMonth() + "/" + date.getFullYear()
+    console.log(da);
+    db.getAllMeasurement()
+        .then(results => {
 
-    let measurement = {
-        temp: parseInt(Math.random() * 27),
-        umi: parseInt(Math.random() * 70),
-        co2: parseInt(Math.random() * 100),
-        arduino: arduinoId[parseInt(Math.random() * 5)],
-        d: da
-    }
+            let inserts = [];
+            for (let i = 0; i < arduinoId.length; i++) {
+                inserts.push(db.insertMeasurement({
+                    temp: parseInt(Math.random() * 27),
+                    umi: parseInt(Math.random() * 70),
+                    co2: parseInt(Math.random() * 100),
+                    arduino: arduinoId[i],
+                    d: da
+                }));
+            }
+            Promise.all(inserts)
+                .then((results) => {
+
+                })
+                .catch(err => console.log(err));
+        })
+        .catch(err => response.json(err));
+
 
     // db.insertMeasurement(measurement)
     //     .then(results => {
@@ -29,7 +59,7 @@ setInterval(() => {
     //     })
     //     .catch(err => console.log(err));
 
-}, 1000);
+}, 15000);
 
 
 router.get('/', (request, response, next) => {
