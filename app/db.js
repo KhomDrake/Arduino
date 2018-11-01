@@ -41,6 +41,8 @@ function SQLQuery(queryLine)
 module.exports.Arduino = {
     insertMeasurement: (measurement) => 
     {
+        console.log(measurement);
+        
         return SQLQuery(`insert into Measurements values(${measurement.temp}, ${measurement.umi}, ${measurement.co2}, ${measurement.arduino}, '${measurement.d}')`);
     },
     getAllMeasurement: () => {

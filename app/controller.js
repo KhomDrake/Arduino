@@ -1,5 +1,6 @@
+
 const express = require('express');
-// const { ArduinoData } = require('./serial')
+const { ArduinoData } = require('./serial');
 const router = express.Router();
 const arduinoId = [1, 2, 3, 4, 5];
 const db = require('./db').Arduino;
@@ -15,7 +16,7 @@ let month = {
     "" : 8,
     "" : 9,
     "Oct" : 10,
-    "" : 11,
+    "Nov" : 11,
     "" : 12
 }
 
@@ -34,23 +35,34 @@ setInterval(() => {
     db.getAllMeasurement()
         .then(results => {
 
+
+
             let inserts = [];
-            for (let i = 0; i < arduinoId.length; i++) {
+            // for (let i = 0; i < arduinoId.length; i++) {
                 inserts.push(db.insertMeasurement({
-                    temp: parseInt(Math.random() * 27),
-                    umi: parseInt(Math.random() * 70),
-                    co2: parseInt(Math.random() * 100),
-                    arduino: arduinoId[i],
+                    temp: ArduinoData.List1[ArduinoData.List1.length - 1],
+                    umi: ArduinoData.List2[ArduinoData.List2.length - 1],
+                    co2: ArduinoData.List3[ArduinoData.List3.length - 1],
+                    arduino: 5,
                     d: da
                 }));
-            }
+            // }
+console.log({
+    temp: ArduinoData.List1[ArduinoData.List1.length - 1],
+    umi: ArduinoData.List2[ArduinoData.List2.length - 1],
+    co2: ArduinoData.List3[ArduinoData.List3.length - 1],
+    arduino: 5,
+    d: da
+});
+
+
             Promise.all(inserts)
                 .then((results) => {
 
                 })
                 .catch(err => console.log(err));
         })
-        .catch(err => response.json(err));
+        .catch(err => console.log(err));
 
 
     // db.insertMeasurement(measurement)
@@ -59,7 +71,7 @@ setInterval(() => {
     //     })
     //     .catch(err => console.log(err));
 
-}, 15000);
+}, 5000);
 
 
 router.get('/', (request, response, next) => {

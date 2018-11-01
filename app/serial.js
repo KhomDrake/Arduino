@@ -6,14 +6,7 @@ class ArduinoDataRead {
     constructor(){
         this.listDataTemperatura = [];
         this.listDataUmidade = [];
-    }
-
-    get ListTemperatura() {
-        return this.listData;
-    }
-
-    get ListUmidade() {
-        return this.listData;
+        this.listDataCO2 = [];
     }
 
     SetConnection(){
@@ -45,6 +38,7 @@ class ArduinoDataRead {
                 const leitura = data.split(';');
                 this.listDataTemperatura.push(parseFloat(leitura[0]));
                 this.listDataUmidade.push(parseFloat(leitura[1]));
+                this.listDataCO2.push(parseInt(leitura[2]));
             });
             
         }).catch(error => console.log(error));
@@ -54,4 +48,4 @@ class ArduinoDataRead {
 const serial = new ArduinoDataRead();
 serial.SetConnection();
 
-module.exports.ArduinoData = {List1: serial.ListTemperatura, List2: serial.ListUmidade} 
+module.exports.ArduinoData = {List1: serial.listDataTemperatura, List2: serial.listDataUmidade, List3: serial.listDataCO2} 
