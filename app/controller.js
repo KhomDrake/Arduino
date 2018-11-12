@@ -1,8 +1,8 @@
 
 const express = require('express');
-const { ArduinoData } = require('./serial');
+// const { ArduinoData } = require('./serial');
 const router = express.Router();
-const arduinoId = [1, 2, 3, 4, 5];
+let arduinoId = [];
 const db = require('./db').Arduino;
 
 let month = {
@@ -20,58 +20,68 @@ let month = {
     "" : 12
 }
 
-setInterval(() => {
+db.getAllArduinos()
+    .then(resultados => {
+        for (let i = 0; i < resultados.length; i++) {
+            arduinoId.push(resultados[i].serieBox);
+        }
+        setInterval(() => {
 
-    let date = new Date();
-    let da = date.toString().split(' ');
-    da = `${da[3]}/${month[da[1]]}/${da[2]} ${da[4]}`;
+            let date = new Date();
+            let da = date.toString().split(' ');
+            let hora = `${da[4]}`;
+            da = `${da[3]}/${month[da[1]]}/${da[2]}`
 
-    // let da = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDay() + " " + date.getHours() +
-    //     ":" + date.getMinutes() + ":" + date.getSeconds() + ":" + date.getMilliseconds();
-
-    // let da = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + " " + date.getDay() +
-    //             "/" + date.getMonth() + "/" + date.getFullYear()
-    console.log(da);
-    db.getAllMeasurement()
-        .then(results => {
-
-
-
-            let inserts = [];
-            // for (let i = 0; i < arduinoId.length; i++) {
-                inserts.push(db.insertMeasurement({
-                    temp: ArduinoData.List1[ArduinoData.List1.length - 1],
-                    umi: ArduinoData.List2[ArduinoData.List2.length - 1],
-                    co2: ArduinoData.List3[ArduinoData.List3.length - 1],
-                    arduino: 5,
-                    d: da
-                }));
-            // }
-console.log({
-    temp: ArduinoData.List1[ArduinoData.List1.length - 1],
-    umi: ArduinoData.List2[ArduinoData.List2.length - 1],
-    co2: ArduinoData.List3[ArduinoData.List3.length - 1],
-    arduino: 5,
-    d: da
-});
-
-
-            Promise.all(inserts)
-                .then((results) => {
-
+            console.log(hora, da);
+        
+            // let da = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDay() + " " + date.getHours() +
+            //     ":" + date.getMinutes() + ":" + date.getSeconds() + ":" + date.getMilliseconds();
+        
+            // let da = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds() + " " + date.getDay() +
+            //             "/" + date.getMonth() + "/" + date.getFullYear()
+        //     console.log(da);
+            db.getAllMeasurement()
+                .then(results => {
+                    let inserts = [];
+                    for (let i = 0; i < arduinoId.length; i++) {
+                        inserts.push(db.insertMeasurement({
+                            temp: parseInt(27 + (Math.random() > 0.5 ? 1 * (Math.random() * 9) : -1 * (Math.random() * 9))),
+                            umi: parseInt(60 + (Math.random() > 0.5 ? 1 * (Math.random() * 15) : -1 * (Math.random() * 15))),
+                            co2: parseInt(270 + (Math.random() > 0.5 ? 1 * (Math.random() * 100) : -1 * (Math.random() * 70))),
+                            arduino: arduinoId[i],
+                            d: da,
+                            h: hora
+                        }));
+                    }
+        // console.log({
+        //     temp: ArduinoData.List1[ArduinoData.List1.length - 1],
+        //     umi: ArduinoData.List2[ArduinoData.List2.length - 1],
+        //     co2: ArduinoData.List3[ArduinoData.List3.length - 1],
+        //     arduino: 5,
+        //     d: da,
+        //     h: hora
+        // });
+        
+        
+                    Promise.all(inserts)
+                        .then((results) => {
+        
+                        })
+                        .catch(err => console.log(err));
                 })
                 .catch(err => console.log(err));
-        })
-        .catch(err => console.log(err));
+        
+        
+            // db.insertMeasurement(measurement)
+            //     .then(results => {
+            //         // console.log(results);
+            //     })
+            //     .catch(err => console.log(err));
+        
+        }, 500);
+    })
 
 
-    // db.insertMeasurement(measurement)
-    //     .then(results => {
-    //         // console.log(results);
-    //     })
-    //     .catch(err => console.log(err));
-
-}, 5000);
 
 
 router.get('/', (request, response, next) => {
