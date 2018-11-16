@@ -78,7 +78,7 @@ db.getAllArduinos()
             //     })
             //     .catch(err => console.log(err));
         
-        }, 500);
+        }, 1000);
     })
 
 
