@@ -43,12 +43,12 @@ module.exports.Arduino = {
     {
         // console.log(measurement);
         
-        return SQLQuery(`insert into Measurements values(${measurement.temp}, ${measurement.umi}, ${measurement.co2}, ${measurement.arduino}, '${measurement.d}','${measurement.h}')`);
+        return SQLQuery(`insert into Medicao values(${measurement.temp}, ${measurement.umi}, ${measurement.co2}, ${measurement.arduino}, '${measurement.d}','${measurement.h}')`);
     },
     getAllMeasurement: () => {
-        return SQLQuery(`select temperatura, umidade, co2, Arduino_SerieBox from Measurements inner join Arduino on Measurements.Arduino_SerieBox = Arduino.serieBox`);
+        return SQLQuery(`select idBox as serieBox from Box`);
     },
     getAllArduinos: () => {
-        return SQLQuery(`select serieBox from Arduino`);
+        return SQLQuery(`select idBox as serieBox from Box`);
     }
 }
